@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>aldonia academy - الطلاب & الأدمن</title>
+<style>
+:root{
+  --bg:#0b1020; --text:#eef1ff; --brand:#6c7bff; --brand2:#33d6a6; --radius:16px;
+  --colorEng:#6c7bff; --colorPhys:#33d6a6; --colorOther:#ffb347;
+}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Tahoma,Arial;background:var(--bg);color:var(--text);}
+.container{max-width:900px;margin:0 auto;padding:22px;}
+h1,h2{margin:0 0 12px;}
+input,textarea,button,select{border-radius:12px;padding:10px;border:none;outline:none;font-size:15px;}
+input,textarea,select{width:100%;margin-top:8px;background: rgba(255,255,255,.04);color:var(--text);border:1px solid rgba(255,255,255,.12);}
+textarea.aiInput{height:150px;}
+button{cursor:pointer;}
+.card{background: rgba(18,26,51,.85); border-radius:var(--radius);padding:14px;margin-top:12px; border:1px solid rgba(255,255,255,.08);}
+.btnPrimary{background: linear-gradient(135deg,var(--brand),var(--brand2)); color:#0b1020; font-weight:700; margin-top:8px;}
+#aiContainer,#scheduleContainer,#adminQuestions,#adminSchedule{margin-top:12px; max-height:300px; overflow:auto; padding:8px; border:1px solid rgba(255,255,255,.12); border-radius:12px;}
+.aiQuestion,.aiSchedule{margin-top:6px; padding:6px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;}
+.scheduleText{flex:1;}
+.scheduleBtn{margin-left:8px; padding:5px 8px; border-radius:10px; border:none; background:var(--brand2); color:#0b1020; cursor:pointer;}
+.designGrid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:12px;}
+.designInput{display:flex;flex-direction:column;}
+.designInput label{margin-bottom:5px;font-weight:600;font-size:13px;}
+.designInput input[type="color"]{height:45px;cursor:pointer;}
+.designInput input[type="text"]{width:100%;}
+.designBtnGroup{display:flex;gap:8px;margin-top:12px;}
+.designBtnGroup button{flex:1;}
+</style>
+</head>
+<body>
+
+<!-- =================== الطلاب =================== -->
+<div class="container" id="studentSection">
+  <h1 id="mainTitle">aldonia academy - تسجيل الطلاب 🎓</h1>
+  <form id="emailForm" class="card">
+    <label>البريد الإلكتروني</label>
+    <input required id="emailInput" type="email" placeholder="email@example.com">
+    <button type="submit" class="btnPrimary">ابدأ الآن</button>
+  </form>
+
+  <div id="aiSection" class="card" style="display:none;">
+    <h2 id="questionsTitle">واجهة الأسئلة (AI خانة)</h2>
+    <div id="aiContainer"></div>
+    <textarea class="aiInput" id="aiInput" placeholder="اكتب سؤالك هنا..."></textarea>
+    <button class="btnPrimary" id="submitQuestion">إرسال السؤال</button>
+  </div>
+
+  <div id="scheduleSection" class="card" style="display:none;">
+    <h2 id="scheduleTitle">جدول الحصص</h2>
+    <div id="scheduleContainer"></div>
+  </div>
+</div>
+
+<!-- =================== الأدمن =================== -->
+<div class="container" id="adminSection" style="display:none;">
+  <h1>لوحة الأدمن 🛠️</h1>
+  <label>كلمة المرور:</label>
+  <input type="password" id="adminPass" placeholder="ادخل كلمة المرور">
+  <button class="btnPrimary" id="loginAdmin">تسجيل دخول الأدمن</button>
+
+  <div id="adminPanel" style="display:none;">
+    <!-- إدارة الأسئلة -->
+    <h2>إدارة الأسئلة</h2>
+    <div id="adminQuestions"></div>
+    <textarea class="aiInput" id="adminAdd" placeholder="أضف سؤال أو تعليمات جديدة"></textarea>
+    <button class="btnPrimary" id="adminAddBtn">أضف السؤال/تعليمات</button>
+
+    <!-- إدارة الحصص -->
+    <h2>إدارة الحصص</h2>
+    <div id="adminSchedule"></div>
+    <input id="newClass" placeholder="مثال: المادة:الاسم:الوقت:رقم وات��اب الكادر">
+    <small>مثال: إنجليزي:تالا البدور:12:00:962787004304</small>
+    <button class="btnPrimary" id="adminAddSchedule">أضف الحصة</button>
+
+    <!-- إعدادات التصميم -->
+    <h2>⚙️ إعدادات التصميم</h2>
+    <div class="card">
+      <div class="designGrid">
+        <div class="designInput">
+          <label>🎨 لون الخلفية</label>
+          <input type="color" id="bgColorPicker" value="#0b1020">
+        </div>
+        <div class="designInput">
+          <label>📝 لون النصوص</label>
+          <input type="color" id="textColorPicker" value="#eef1ff">
+        </div>
+        <div class="designInput">
+          <label>💙 لون الزر الأساسي</label>
+          <input type="color" id="brand1Picker" value="#6c7bff">
+        </div>
+        <div class="designInput">
+          <label>💚 لون الزر الثاني</label>
+          <input type="color" id="brand2Picker" value="#33d6a6">
+        </div>
+        <div class="designInput">
+          <label>📌 عنوان الموقع الرئيسي</label>
+          <input type="text" id="mainTitleInput" value="aldonia academy - تسجيل الطلاب 🎓">
+        </div>
+        <div class="designInput">
+          <label>📌 عنوان الأسئلة</label>
+          <input type="text" id="questionsTitleInput" value="واجهة الأسئلة (AI خانة)">
+        </div>
+        <div class="designInput">
+          <label>📌 عنوان الجدول</label>
+          <input type="text" id="scheduleTitleInput" value="جدول الحصص">
+        </div>
+      </div>
+      <div class="designBtnGroup">
+        <button class="btnPrimary" id="applyDesignBtn">✅ تطبيق التغييرات</button>
+        <button class="btnPrimary" id="resetDesignBtn">🔄 إعادة تعيين</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- الطلاب ----------
+let studentEmail;
+const emailForm=document.getElementById("emailForm");
+const aiSection=document.getElementById("aiSection");
+const aiContainer=document.getElementById("aiContainer");
+const scheduleSection=document.getElementById("scheduleSection");
+const scheduleContainer=document.getElementById("scheduleContainer");
+
+emailForm.addEventListener("submit",(e)=>{
+  e.preventDefault();
+  studentEmail=document.getElementById("emailInput").value.trim();
+  if(!studentEmail){alert("ضع بريد صالح"); return;}
+  emailForm.style.display="none";
+  aiSection.style.display="block";
+  scheduleSection.style.display="block";
+  loadQuestions();
+  loadSchedule();
+  alert("مرحبًا! يمكنك الآن استخدام خانة الأسئلة ورؤية جدول الحصص.");
+});
+
+// إضافة الأسئلة
+document.getElementById("submitQuestion").addEventListener("click",()=>{
+  const question=document.getElementById("aiInput").value.trim();
+  if(!question) return;
+  const qObj={email:studentEmail,text:question};
+  saveQuestion(qObj);
+  displayQuestion(qObj);
+  document.getElementById("aiInput").value="";
+});
+
+function saveQuestion(q){
+  let allQs=JSON.parse(localStorage.getItem("questions")||"[]");
+  allQs.push(q);
+  localStorage.setItem("questions",JSON.stringify(allQs));
+}
+function loadQuestions(){
+  aiContainer.innerHTML="";
+  const allQs=JSON.parse(localStorage.getItem("questions")||"[]");
+  allQs.filter(q=>q.email===studentEmail).forEach(displayQuestion);
+}
+function displayQuestion(q){
+  const div=document.createElement("div");
+  div.className="aiQuestion";
+  div.textContent=q.text;
+  aiContainer.appendChild(div);
+}
+
+// ---------- جدول الحصص ----------
+function loadSchedule(){
+  scheduleContainer.innerHTML="";
+  const allClasses=JSON.parse(localStorage.getItem("classes")||"[]");
+  allClasses.forEach((c,i)=>{
+    const div=document.createElement("div");
+    div.className="aiSchedule";
+    const parts=c.split(":");
+    const color=parts[0].toLowerCase().includes("إنجليزي")? "var(--colorEng)" : parts[0].toLowerCase().includes("فيزياء")? "var(--colorPhys)" : "var(--colorOther)";
+    div.style.background=color;
+    const textDiv=document.createElement("div");
+    textDiv.className="scheduleText";
+    textDiv.textContent=`${parts[0]} مع ${parts[1]} الساعة ${parts[2]}`;
+    div.appendChild(textDiv);
+
+    const btn=document.createElement("button");
+    btn.className="scheduleBtn";
+    btn.textContent="واتساب الكادر";
+    btn.onclick=()=>{window.open(`https://wa.me/${parts[3]}?text=مرحبا، أريد الاستفسار عن الحصة`,"_blank");};
+    div.appendChild(btn);
+
+    scheduleContainer.appendChild(div);
+  });
+}
+
+// ---------- الأدمن ----------
+const adminSection=document.getElementById("adminSection");
+const adminPanel=document.getElementById("adminPanel");
+const adminQuestions=document.getElementById("adminQuestions");
+const adminSchedule=document.getElementById("adminSchedule");
+const adminPass="1234";
+
+document.getElementById("loginAdmin").addEventListener("click",()=>{
+  const pass=document.getElementById("adminPass").value;
+  if(pass===adminPass){
+    adminPanel.style.display="block";
+    loadAdminQuestions();
+    loadAdminSchedule();
+    loadDesignSettings();
+    alert("تم تسجيل دخول الأدمن");
+  }else{alert("كلمة المرور خاطئة!");}
+});
+
+// إدارة الأسئلة
+document.getElementById("adminAddBtn").addEventListener("click",()=>{
+  const text=document.getElementById("adminAdd").value.trim();
+  if(!text) return;
+  const qObj={email:"admin",text:text};
+  saveQuestion(qObj);
+  loadAdminQuestions();
+  document.getElementById("adminAdd").value="";
+});
+
+function loadAdminQuestions(){
+  adminQuestions.innerHTML="";
+  const allQs=JSON.parse(localStorage.getItem("questions")||"[]");
+  allQs.forEach((q,i)=>{
+    const div=document.createElement("div");
+    div.className="aiQuestion";
+    div.textContent=`${q.email}: ${q.text}`;
+    const delBtn=document.createElement("button");
+    delBtn.textContent="حذف";
+    delBtn.style.marginLeft="8px";
+    delBtn.onclick=()=>{
+      allQs.splice(i,1);
+      localStorage.setItem("questions",JSON.stringify(allQs));
+      loadAdminQuestions();
+      loadQuestions();
+    };
+    div.appendChild(delBtn);
+    adminQuestions.appendChild(div);
+  });
+}
+
+// إدارة الحصص
+document.getElementById("adminAddSchedule").addEventListener("click",()=>{
+  const cls=document.getElementById("newClass").value.trim();
+  if(!cls) return;
+  let allClasses=JSON.parse(localStorage.getItem("classes")||"[]");
+  allClasses.push(cls);
+  localStorage.setItem("classes",JSON.stringify(allClasses));
+  loadAdminSchedule();
+  loadSchedule();
+  document.getElementById("newClass").value="";
+});
+
+function loadAdminSchedule(){
+  adminSchedule.innerHTML="";
+  const allClasses=JSON.parse(localStorage.getItem("classes")||"[]");
+  allClasses.forEach((c,i)=>{
+    const div=document.createElement("div");
+    div.className="aiSchedule";
+    const parts=c.split(":");
+    const color=parts[0].toLowerCase().includes("إنجليزي")? "var(--colorEng)" : parts[0].toLowerCase().includes("فيزياء")? "var(--colorPhys)" : "var(--colorOther)";
+    div.style.background=color;
+    const textDiv=document.createElement("div");
+    textDiv.className="scheduleText";
+    textDiv.textContent=`${parts[0]} مع ${parts[1]} الساعة ${parts[2]}`;
+    div.appendChild(textDiv);
+
+    const delBtn=document.createElement("button");
+    delBtn.className="scheduleBtn";
+    delBtn.textContent="حذف";
+    delBtn.onclick=()=>{
+      allClasses.splice(i,1);
+      localStorage.setItem("classes",JSON.stringify(allClasses));
+      loadAdminSchedule();
+      loadSchedule();
+    };
+    div.appendChild(delBtn);
+
+    adminSchedule.appendChild(div);
+  });
+}
+
+// ---------- إعدادات التصميم ----------
+function loadDesignSettings(){
+  const design=JSON.parse(localStorage.getItem("designSettings")||'{"bg":"#0b1020","text":"#eef1ff","brand1":"#6c7bff","brand2":"#33d6a6","mainTitle":"aldonia academy - تسجيل الطلاب 🎓","questionsTitle":"واجهة الأسئلة (AI خانة)","scheduleTitle":"جدول الحصص"}');
+  document.getElementById("bgColorPicker").value=design.bg;
+  document.getElementById("textColorPicker").value=design.text;
+  document.getElementById("brand1Picker").value=design.brand1;
+  document.getElementById("brand2Picker").value=design.brand2;
+  document.getElementById("mainTitleInput").value=design.mainTitle;
+  document.getElementById("questionsTitleInput").value=design.questionsTitle;
+  document.getElementById("scheduleTitleInput").value=design.scheduleTitle;
+  applyDesign(design);
+}
+
+function applyDesign(design){
+  document.documentElement.style.setProperty('--bg',design.bg);
+  document.documentElement.style.setProperty('--text',design.text);
+  document.documentElement.style.setProperty('--brand',design.brand1);
+  document.documentElement.style.setProperty('--brand2',design.brand2);
+  document.getElementById("mainTitle").textContent=design.mainTitle;
+  document.getElementById("questionsTitle").textContent=design.questionsTitle;
+  document.getElementById("scheduleTitle").textContent=design.scheduleTitle;
+  document.body.style.backgroundColor=design.bg;
+  document.body.style.color=design.text;
+}
+
+document.getElementById("applyDesignBtn").addEventListener("click",()=>{
+  const design={
+    bg:document.getElementById("bgColorPicker").value,
+    text:document.getElementById("textColorPicker").value,
+    brand1:document.getElementById("brand1Picker").value,
+    brand2:document.getElementById("brand2Picker").value,
+    mainTitle:document.getElementById("mainTitleInput").value,
+    questionsTitle:document.getElementById("questionsTitleInput").value,
+    scheduleTitle:document.getElementById("scheduleTitleInput").value
+  };
+  localStorage.setItem("designSettings",JSON.stringify(design));
+  applyDesign(design);
+  alert("✅ تم حفظ التغييرات!");
+});
+
+document.getElementById("resetDesignBtn").addEventListener("click",()=>{
+  localStorage.removeItem("designSettings");
+  location.reload();
+});
+
+// تطبيق الإعدادات عند التحميل
+window.addEventListener("DOMContentLoaded",()=>{
+  const design=JSON.parse(localStorage.getItem("designSettings")||'{"bg":"#0b1020","text":"#eef1ff","brand1":"#6c7bff","brand2":"#33d6a6","mainTitle":"aldonia academy - تسجيل الطلاب 🎓","questionsTitle":"واجهة الأسئلة (AI خانة)","scheduleTitle":"جدول الحصص"}');
+  applyDesign(design);
+});
+</script>
+</body>
+</html>
